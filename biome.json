@@ -23,8 +23,8 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
-      "semicolons": "asNeeded",
-      "arrowParentheses": "asNeeded",
+      "semicolons": "always",
+      "arrowParentheses": "always",
       "jsxQuoteStyle": "double",
       "trailingCommas": "es5"
     }
