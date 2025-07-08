@@ -1,5 +1,4 @@
-import { db } from '@/infra/db';
-import { schema } from '@/infra/db/schemas';
+import { uploadImage } from '@/app/functions/upload-image';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod/v4';
 
@@ -12,6 +11,7 @@ export const uploadImageRoute: FastifyPluginAsyncZod = async (server) => {
         consumes: ['multipart/form-data'],
         response: {
           201: z.object({ uploadId: z.string() }),
+          400: z.object({ message: z.string() }),
           409: z
             .object({ message: z.string() })
             .describe('Upload already exists'),
@@ -25,13 +25,19 @@ export const uploadImageRoute: FastifyPluginAsyncZod = async (server) => {
         },
       });
 
-      console.log(uploadedFile);
+      if (!uploadedFile) {
+        return res.status(400).send({ message: 'File is required' });
+      }
 
-      await db.insert(schema.uploads).values({
-        name: 'teste',
-        remoteKey: 'teste.jpg',
-        remoteUrl: 'http://dsjofiadsjf.com',
+      // Ao utilizar o to buffer todo o arquivo seria carregado e aplicação ficaria muito pesada
+      // const file = await uploadedFile.toBuffer();
+
+      await uploadImage({
+        fileName: uploadedFile.filename,
+        contentType: uploadedFile.mimetype,
+        contentStream: uploadedFile.file,
       });
+
       return res.status(201).send({ uploadId: '' });
     }
   );
