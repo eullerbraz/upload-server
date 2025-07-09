@@ -1,5 +1,6 @@
 import { db } from '@/infra/db';
 import { schema } from '@/infra/db/schemas';
+import { uploadFileToStorage } from '@/infra/storage/upload-file-to-storage';
 import { type Either, makeLeft, makeRight } from '@/shared/either';
 import { Readable } from 'node:stream';
 import { z } from 'zod';
@@ -18,19 +19,25 @@ const allowedMimeTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
 export async function uploadImage(
   input: UploadImageInput
 ): Promise<Either<InvalidFileFormat, { url: string }>> {
-  const { fileName, contentType } = uploadImageInput.parse(input);
+  const { fileName, contentType, contentStream } =
+    uploadImageInput.parse(input);
 
   if (!allowedMimeTypes.includes(contentType)) {
     return makeLeft(new InvalidFileFormat());
   }
 
-  // Todo: Carregar a imagem para o Cloudflare R2
+  const { key, url } = await uploadFileToStorage({
+    fileName,
+    contentType,
+    contentStream,
+    folder: 'images',
+  });
 
   await db.insert(schema.uploads).values({
     name: fileName,
-    remoteKey: fileName,
-    remoteUrl: fileName,
+    remoteKey: key,
+    remoteUrl: url,
   });
 
-  return makeRight({ url: '' });
+  return makeRight({ url });
 }
