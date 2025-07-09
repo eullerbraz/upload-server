@@ -11,11 +11,11 @@ export const uploadImageRoute: FastifyPluginAsyncZod = async (server) => {
         summary: 'Upload an image',
         consumes: ['multipart/form-data'],
         response: {
-          201: z.null().describe('Image uploaded'),
+          201: z.null().describe('Image uploaded.'),
           400: z.object({ message: z.string() }),
           409: z
             .object({ message: z.string() })
-            .describe('Upload already exists'),
+            .describe('Upload already exists.'),
         },
       },
     },
@@ -27,7 +27,7 @@ export const uploadImageRoute: FastifyPluginAsyncZod = async (server) => {
       });
 
       if (!uploadedFile) {
-        return res.status(400).send({ message: 'File is required' });
+        return res.status(400).send({ message: 'File is required.' });
       }
 
       // Ao utilizar o to buffer todo o arquivo seria carregado e aplicação ficaria muito pesada
@@ -38,6 +38,12 @@ export const uploadImageRoute: FastifyPluginAsyncZod = async (server) => {
         contentType: uploadedFile.mimetype,
         contentStream: uploadedFile.file,
       });
+
+      if (uploadedFile.file.truncated) {
+        res.status(400).send({
+          message: 'File size limit reached.',
+        });
+      }
 
       if (isRight(result)) {
         console.log(unwrapEither(result));
