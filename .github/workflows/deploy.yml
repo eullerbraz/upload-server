@@ -13,6 +13,24 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+
+      - name: Configure Node
+        id: configure-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        id: install-pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        id: install-dependencies
+        run: |
+          pnpm Install
+
       - name: Configure AWS Credentials
         id: configure-aws-credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -20,14 +38,17 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
+
       - name: Login to AWS ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
       - name: Generate tag
         id: generate-tag
         run: |
           SHA=$(echo $GITHUB_SHA | head -c7)
           echo "sha=$SHA" >> $GITHUB_OUTPUT
+
       - name: Build and push the image to AWS ECR
         id: build-and-push-the-image-to-aws-ecr
         uses: docker/build-push-action@v6
