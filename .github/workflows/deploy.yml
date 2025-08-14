@@ -55,7 +55,7 @@ jobs:
           context: .
           load: true
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # cache-to: type=gha,mode=max
           tags: |
             ${{steps.login-ecr.outputs.registry}}/${{ vars.ECR_REPOSITORY }}:test
 
