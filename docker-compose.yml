@@ -1,6 +1,7 @@
 services:
-  pg:
+  db:
     image: bitnami/postgresql:latest
+    container_name: postgres
     ports:
       - 5432:5432
     environment:
@@ -8,4 +9,35 @@ services:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_DB=upload
     volumes:
-      - './docker:/docker-entrypoint-initdb.d'
+      - ./docker:/docker-entrypoint-initdb.d
+      - db:/var/lib/postgresql/data
+    networks:
+      - app
+      - db
+
+  app:
+    build: .
+    depends_on:
+      - db
+    container_name: upload-server
+    ports:
+      - 3000:3333
+    environment:
+      - CLOUDFLARE_ACCESS_ID=$CLOUDFLARE_ACCESS_ID
+      - CLOUDFLARE_SECRET_ACCESS_KEY=$CLOUDFLARE_SECRET_ACCESS_KEY
+      - CLOUDFLARE_BUCKET=$CLOUDFLARE_BUCKET
+      - CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ACCOUNT_ID
+      - CLOUDFLARE_PUBLIC_URL=$CLOUDFLARE_PUBLIC_URL
+      - DATABASE_URL=$DATABASE_URL
+    # env_file: .env
+    networks:
+      - app
+
+volumes:
+  db:
+
+networks:
+  app:
+    driver: bridge
+  db:
+    driver: bridge
