@@ -2,6 +2,7 @@ services:
   db:
     image: bitnami/postgresql:latest
     container_name: postgres
+    restart: unless-stopped
     ports:
       - 5432:5432
     environment:
@@ -20,6 +21,7 @@ services:
     depends_on:
       - db
     container_name: upload-server
+    restart: unless-stopped
     ports:
       - 3000:3333
     environment:
