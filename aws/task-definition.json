@@ -1,0 +1,120 @@
+{
+  "compatibilities": ["EC2", "FARGATE"],
+  "containerDefinitions": [
+    {
+      "cpu": 786,
+      "environment": [
+        {
+          "name": "CLOUDFLARE_PUBLIC_URL",
+          "value": "https://pub-6c0d2e5df7754093bdd78a3f84961faf.r2.dev"
+        },
+        {
+          "name": "CLOUDFLARE_ACCESS_ID",
+          "value": "538592e1e27c157b0137c5b691c82f6d"
+        },
+        {
+          "name": "CLOUDFLARE_BUCKET",
+          "value": "upload-server"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "postgresql://docker:docker@localhost:5432/upload"
+        },
+        {
+          "name": "CLOUDFLARE_SECRET_ACCESS_KEY",
+          "value": "4cfd926ff5948ee07c4bc4f3871826111c0a16d71acb3a3dac23cd95fcf459b5"
+        },
+        {
+          "name": "CLOUDFLARE_ACCOUNT_ID",
+          "value": "06d48b0016a4000b0e6131d752e71475"
+        }
+      ],
+      "environmentFiles": [],
+      "essential": true,
+      "image": "393010280328.dkr.ecr.us-east-1.amazonaws.com/rocketseat/ftr/upload-server:e4e8bf9",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/upload-server",
+          "awslogs-create-group": "true",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "memory": 1024,
+      "memoryReservation": 1024,
+      "mountPoints": [],
+      "name": "upload-server",
+      "portMappings": [
+        {
+          "appProtocol": "http",
+          "containerPort": 3333,
+          "hostPort": 3333,
+          "name": "port",
+          "protocol": "tcp"
+        }
+      ],
+      "systemControls": [],
+      "ulimits": [],
+      "volumesFrom": []
+    }
+  ],
+  "cpu": "1024",
+  "enableFaultInjection": false,
+  "executionRoleArn": "arn:aws:iam::393010280328:role/ecsTaskExecutionRole",
+  "family": "upload-server",
+  "memory": "2048",
+  "networkMode": "awsvpc",
+  "placementConstraints": [],
+  "registeredAt": "2025-08-29T11:38:56.957Z",
+  "registeredBy": "arn:aws:iam::393010280328:user/eullerbraz",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "revision": 1,
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "status": "ACTIVE",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:393010280328:task-definition/upload-server:1",
+  "taskRoleArn": "arn:aws:iam::393010280328:role/ecsTaskExecutionRole",
+  "volumes": [],
+  "tags": [
+    {
+      "key": "IAC",
+      "value": "false"
+    }
+  ]
+}

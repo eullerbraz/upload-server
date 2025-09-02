@@ -5,6 +5,13 @@ on:
     branches:
       - main
 
+# Esse campo ENV da pipeline é uma alternativa as variables do repositório no github, porém ele é indicado para dados não sensiveís, já que essa arquivo vai ser commitado no repositório. Para secrets utilize sempre o campo secrets do github
+env:
+  ECS_SERVICE: upload-server
+  ECS_CLUSTER: rocketseat-ecs
+  CONTAINER_NAME: upload-server
+  ECS_TASK_DEFINITION: .aws/task-definition.json
+
 jobs:
   build:
     name: Build
@@ -83,18 +90,35 @@ jobs:
           tags: |
             ${{steps.login-ecr.outputs.registry}}/${{ vars.ECR_REPOSITORY }}:${{ steps.generate-tag.outputs.sha }}
 
-      - name: Deploy to App Runner
-        id: deploy-app-runner
-        uses: awslabs/amazon-app-runner-deploy@main
+      - name: Render task definition
+        id: render-task-definition
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          service: ${{ vars.APP_RUNNER_SERVICE_NAME }}
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
           image: ${{steps.login-ecr.outputs.registry}}/${{ vars.ECR_REPOSITORY }}:${{ steps.generate-tag.outputs.sha }}
-          region: ${{ vars.AWS_REGION }}
-          access-role-arn: ${{ secrets.ACCESS_ROLE_ARN }}
-          cpu: 1
-          memory: 2
-          port: 3333
-          wait-for-service-stability-seconds: 300
 
-      - name: App Runner Check
-        run: echo "App running... ${{ steps.deploy-app-runner.outputs.service-url }}"
+      - name: Deploy Amazon ECS
+        id: deploy-amazon-ecs
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      # - name: Deploy to App Runner
+      #   id: deploy-app-runner
+      #   uses: awslabs/amazon-app-runner-deploy@main
+      #   with:
+      #     service: ${{ vars.APP_RUNNER_SERVICE_NAME }}
+      #     image: ${{steps.login-ecr.outputs.registry}}/${{ vars.ECR_REPOSITORY }}:${{ steps.generate-tag.outputs.sha }}
+      #     region: ${{ vars.AWS_REGION }}
+      #     access-role-arn: ${{ secrets.ACCESS_ROLE_ARN }}
+      #     cpu: 1
+      #     memory: 2
+      #     port: 3333
+      #     wait-for-service-stability-seconds: 300
+
+      # - name: App Runner Check
+      #   run: echo "App running... ${{ steps.deploy-app-runner.outputs.service-url }}"
