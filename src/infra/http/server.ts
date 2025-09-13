@@ -8,6 +8,7 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod';
+import { log } from '../logger';
 import { exportUploadsRoute } from './routes/export-uploads';
 import { getUploadsRoute } from './routes/get-uploads';
 import { healthCheckRoute } from './routes/health-check';
@@ -52,5 +53,5 @@ server.register(getUploadsRoute);
 server.register(exportUploadsRoute);
 
 server.listen({ port: 3333, host: '0.0.0.0' }).then(() => {
-  console.log('HTTP server running!!!');
+  log.info('HTTP server running!!!');
 });
