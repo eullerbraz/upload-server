@@ -9,6 +9,7 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 import { log } from '../logger';
+import { secret } from '../secret';
 import { exportUploadsRoute } from './routes/export-uploads';
 import { getUploadsRoute } from './routes/get-uploads';
 import { healthCheckRoute } from './routes/health-check';
@@ -52,6 +53,10 @@ server.register(uploadImageRoute);
 server.register(getUploadsRoute);
 server.register(exportUploadsRoute);
 
-server.listen({ port: 3333, host: '0.0.0.0' }).then(() => {
+server.listen({ port: 3333, host: '0.0.0.0' }).then(async () => {
+  const values = await secret.read('secret/data/upload-server');
+
+  console.log('Vault Values:', values.data.data);
+
   log.info('HTTP server running!!!');
 });
