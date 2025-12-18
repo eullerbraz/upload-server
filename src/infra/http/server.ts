@@ -1,3 +1,5 @@
+import { DecryptCommand, KMSClient } from '@aws-sdk/client-kms';
+import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { fastifyCors } from '@fastify/cors';
 import { fastifyMultipart } from '@fastify/multipart';
 import { fastifySwagger } from '@fastify/swagger';
@@ -9,12 +11,19 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 import { log } from '../logger';
-import { secret } from '../secret';
 import { exportUploadsRoute } from './routes/export-uploads';
 import { getUploadsRoute } from './routes/get-uploads';
 import { healthCheckRoute } from './routes/health-check';
 import { transformSwaggerSchema } from './routes/transform-swagger-schema';
 import { uploadImageRoute } from './routes/upload-image';
+
+const ssm = new SSMClient({
+  region: 'us-east-1',
+});
+
+const kms = new KMSClient({
+  region: 'us-east-1',
+});
 
 const server = fastify();
 
@@ -54,9 +63,30 @@ server.register(getUploadsRoute);
 server.register(exportUploadsRoute);
 
 server.listen({ port: 3333, host: '0.0.0.0' }).then(async () => {
-  const values = await secret.read('secret/data/upload-server');
+  // const values = await secret.read('secret/data/upload-server');
 
-  console.log('Vault Values:', values.data.data);
+  // console.log('Vault Values:', values.data.data);
+
+  const values = await ssm.send(
+    new GetParameterCommand({
+      Name: 'CLOUDFLARE_ACCOUNT_ID',
+      WithDecryption: false,
+    })
+  );
+
+  if (values.Parameter?.Value) {
+    const command = new DecryptCommand({
+      CiphertextBlob: Buffer.from(values.Parameter.Value, 'base64'),
+    });
+
+    const commandResult = await kms.send(command);
+
+    const result = new TextDecoder().decode(commandResult.Plaintext);
+
+    console.log(result);
+  }
+
+  console.log(values);
 
   log.info('HTTP server running!!!');
 });
