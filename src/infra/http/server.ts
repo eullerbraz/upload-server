@@ -1,5 +1,9 @@
-import { DecryptCommand, KMSClient } from '@aws-sdk/client-kms';
-import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
+// import { DecryptCommand, KMSClient } from '@aws-sdk/client-kms';
+// import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
+// import {
+//   GetSecretValueCommand,
+//   SecretsManagerClient,
+// } from '@aws-sdk/client-secrets-manager';
 import { fastifyCors } from '@fastify/cors';
 import { fastifyMultipart } from '@fastify/multipart';
 import { fastifySwagger } from '@fastify/swagger';
@@ -17,13 +21,17 @@ import { healthCheckRoute } from './routes/health-check';
 import { transformSwaggerSchema } from './routes/transform-swagger-schema';
 import { uploadImageRoute } from './routes/upload-image';
 
-const ssm = new SSMClient({
-  region: 'us-east-1',
-});
+// const ssm = new SSMClient({
+//   region: 'us-east-1',
+// });
 
-const kms = new KMSClient({
-  region: 'us-east-1',
-});
+// const kms = new KMSClient({
+//   region: 'us-east-1',
+// });
+
+// const secretsManager = new SecretsManagerClient({
+//   region: 'us-east-1',
+// });
 
 const server = fastify();
 
@@ -67,26 +75,30 @@ server.listen({ port: 3333, host: '0.0.0.0' }).then(async () => {
 
   // console.log('Vault Values:', values.data.data);
 
-  const values = await ssm.send(
-    new GetParameterCommand({
-      Name: 'CLOUDFLARE_ACCOUNT_ID',
-      WithDecryption: false,
-    })
-  );
+  // const values = await ssm.send(
+  //   new GetParameterCommand({
+  //     Name: 'CLOUDFLARE_ACCOUNT_ID',
+  //     WithDecryption: false,
+  //   })
+  // );
 
-  if (values.Parameter?.Value) {
-    const command = new DecryptCommand({
-      CiphertextBlob: Buffer.from(values.Parameter.Value, 'base64'),
-    });
+  // if (values.Parameter?.Value) {
+  //   const command = new DecryptCommand({
+  //     CiphertextBlob: Buffer.from(values.Parameter.Value, 'base64'),
+  //   });
 
-    const commandResult = await kms.send(command);
+  //   const commandResult = await kms.send(command);
 
-    const result = new TextDecoder().decode(commandResult.Plaintext);
+  //   const result = new TextDecoder().decode(commandResult.Plaintext);
 
-    console.log(result);
-  }
+  //   console.log(result);
+  // }
 
-  console.log(values);
+  // const values = await secretsManager.send(
+  //   new GetSecretValueCommand({ SecretId: 'prod/upload-server' })
+  // );
+
+  // console.log(values);
 
   log.info('HTTP server running!!!');
 });
