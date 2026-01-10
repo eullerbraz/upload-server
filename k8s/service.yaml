@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: upload-server-svc
+  namespace: upload-server
+spec:
+  type: ClusterIP
+  selector:
+    app: upload-server
+  ports:
+    - port: 80
+      targetPort: 3333
