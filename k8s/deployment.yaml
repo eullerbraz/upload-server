@@ -1,11 +1,16 @@
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 
 metadata:
-  name: upload-server-rs
+  name: upload-server-deployment
   namespace: upload-server
 
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 10%
   replicas: 5
   selector:
     matchLabels:
