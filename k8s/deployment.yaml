@@ -39,6 +39,33 @@ spec:
               value: 'upload-server'
             - name: CLOUDFLARE_PUBLIC_URL
               value: 'https://pub-#.r2.dev'
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3333
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 1
+            periodSeconds: 15
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3333
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 1
+            periodSeconds: 15
+            initialDelaySeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3333
+            failureThreshold: 2
+            successThreshold: 1
+            timeoutSeconds: 1
+            periodSeconds: 15
+            initialDelaySeconds: 15
           resources:
             requests:
               cpu: '200m'
