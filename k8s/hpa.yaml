@@ -1,0 +1,15 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+
+metadata:
+  name: upload-server-hpa
+  namespace: upload-server
+
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: upload-server-deployment
+  minReplicas: 3
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 75
