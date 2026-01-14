@@ -26,7 +26,21 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3333
+          envFrom:
+            - configMapRef:
+                name: upload-server-cm
           env:
+            # - name: CLOUDFLARE_BUCKET
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: upload-server-cm
+            #       key: CLOUDFLARE_BUCKET
+            # - name: CLOUDFLARE_PUBLIC_URL
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: upload-server-cm
+            #       key: CLOUDFLARE_PUBLIC_URL
+
             - name: DATABASE_URL
               value: 'postgresql://docker:docker@localhost:5432/upload'
             - name: CLOUDFLARE_ACCOUNT_ID
@@ -35,10 +49,11 @@ spec:
               value: '#'
             - name: CLOUDFLARE_SECRET_ACCESS_KEY
               value: '#'
-            - name: CLOUDFLARE_BUCKET
-              value: 'upload-server'
-            - name: CLOUDFLARE_PUBLIC_URL
-              value: 'https://pub-#.r2.dev'
+            # - name: CLOUDFLARE_BUCKET
+            #   value: 'upload-server'
+            # - name: CLOUDFLARE_PUBLIC_URL
+            #   value: 'https://pub-#.r2.dev'
+
           startupProbe:
             httpGet:
               path: /health

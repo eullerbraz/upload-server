@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: upload-server-cm
+  namespace: upload-server
+
+data:
+  CLOUDFLARE_BUCKET: 'upload-server'
+  CLOUDFLARE_PUBLIC_URL: 'https://pub-#.r2.dev'
