@@ -29,30 +29,52 @@ spec:
           envFrom:
             - configMapRef:
                 name: upload-server-cm
-          env:
-            # - name: CLOUDFLARE_BUCKET
-            #   valueFrom:
-            #     configMapKeyRef:
-            #       name: upload-server-cm
-            #       key: CLOUDFLARE_BUCKET
-            # - name: CLOUDFLARE_PUBLIC_URL
-            #   valueFrom:
-            #     configMapKeyRef:
-            #       name: upload-server-cm
-            #       key: CLOUDFLARE_PUBLIC_URL
+            - secretRef:
+                name: upload-server-secret
+          # env:
+          # - name: CLOUDFLARE_BUCKET
+          #   valueFrom:
+          #     configMapKeyRef:
+          #       name: upload-server-cm
+          #       key: CLOUDFLARE_BUCKET
+          # - name: CLOUDFLARE_PUBLIC_URL
+          #   valueFrom:
+          #     configMapKeyRef:
+          #       name: upload-server-cm
+          #       key: CLOUDFLARE_PUBLIC_URL
+          # - name: DATABASE_URL
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: upload-server-secret
+          #       key: DATABASE_URL
+          # - name: CLOUDFLARE_ACCOUNT_ID
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: upload-server-secret
+          #       key: CLOUDFLARE_ACCOUNT_ID
+          # - name: CLOUDFLARE_ACCESS_ID
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: upload-server-secret
+          #       key: CLOUDFLARE_ACCESS_ID
+          # - name: CLOUDFLARE_SECRET_ACCESS_KEY
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: upload-server-secret
+          #       key: CLOUDFLARE_SECRET_ACCESS_KEY
 
-            - name: DATABASE_URL
-              value: 'postgresql://docker:docker@localhost:5432/upload'
-            - name: CLOUDFLARE_ACCOUNT_ID
-              value: '#'
-            - name: CLOUDFLARE_ACCESS_ID
-              value: '#'
-            - name: CLOUDFLARE_SECRET_ACCESS_KEY
-              value: '#'
-            # - name: CLOUDFLARE_BUCKET
-            #   value: 'upload-server'
-            # - name: CLOUDFLARE_PUBLIC_URL
-            #   value: 'https://pub-#.r2.dev'
+          # - name: DATABASE_URL
+          #   value: 'postgresql://docker:docker@localhost:5432/upload'
+          # - name: CLOUDFLARE_ACCOUNT_ID
+          #   value: '#'
+          # - name: CLOUDFLARE_ACCESS_ID
+          #   value: '#'
+          # - name: CLOUDFLARE_SECRET_ACCESS_KEY
+          #   value: '#'
+          # - name: CLOUDFLARE_BUCKET
+          #   value: 'upload-server'
+          # - name: CLOUDFLARE_PUBLIC_URL
+          #   value: 'https://pub-#.r2.dev'
 
           startupProbe:
             httpGet:
