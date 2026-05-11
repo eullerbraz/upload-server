@@ -20,11 +20,27 @@ spec:
   #   rollingUpdate:
   #     maxSurge: 20%
   #     maxUnavailable: 10%
+  # strategy:
+  #   blueGreen:
+  #     activeService: upload-server-svc
+  #     previewService: upload-server-preview-svc
+  #     autoPromotionEnabled: false
   strategy:
-    blueGreen:
-      activeService: upload-server-svc
-      previewService: upload-server-preview-svc
-      autoPromotionEnabled: false
+    canary:
+      # Geralmente usamos o mesmo serviço para stable e canary, mas nesse caso, para fins de teste, vamos usar serviços separados
+      stableService: upload-server-svc
+      canaryService: upload-server-preview-svc
+      steps:
+        - setWeight: 20
+        - pause: {}
+        - setWeight: 40
+        - pause: { duration: 15s }
+        - setWeight: 60
+        - pause: { duration: 15s }
+        - setWeight: 80
+        - pause: { duration: 15s }
+        - setWeight: 100
+
   template:
     metadata:
       labels:
@@ -32,7 +48,7 @@ spec:
     spec:
       containers:
         - name: upload-server
-          image: eullerbraz/upload-server:18965d0
+          image: eullerbraz/upload-server:34774b1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3333
