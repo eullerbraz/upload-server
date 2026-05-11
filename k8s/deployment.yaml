@@ -1,20 +1,30 @@
-apiVersion: apps/v1
-kind: Deployment
+# Exemplo Deployment com rolling update
+# apiVersion: apps/v1
+# kind: Deployment
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 
 metadata:
   name: upload-server-deployment
   namespace: upload-server
 
 spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 20%
-      maxUnavailable: 10%
-  replicas: 3
+  replicas: 10
+  revisionHistoryLimit: 5
   selector:
     matchLabels:
       app: upload-server
+  # strategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxSurge: 20%
+  #     maxUnavailable: 10%
+  strategy:
+    blueGreen:
+      activeService: upload-server-svc
+      previewService: upload-server-preview-svc
+      autoPromotionEnabled: false
   template:
     metadata:
       labels:
@@ -22,7 +32,7 @@ spec:
     spec:
       containers:
         - name: upload-server
-          image: eullerbraz/upload-server:34774b1
+          image: eullerbraz/upload-server:18965d0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3333
